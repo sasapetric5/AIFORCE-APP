@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI FORCE - AI Visibility Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+      @keyframes aurora {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      body {
+        --aurora-color-1: theme('colors.brand-primary / 0.2');
+        --aurora-color-2: theme('colors.brand-secondary / 0.2');
+      }
+      .aurora-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: radial-gradient(at 20% 20%, var(--aurora-color-1) 0px, transparent 50%),
+                    radial-gradient(at 80% 20%, theme('colors.cyan.500 / 0.1') 0px, transparent 50%),
+                    radial-gradient(at 20% 80%, var(--aurora-color-2) 0px, transparent 50%),
+                    radial-gradient(at 80% 80%, theme('colors.brand-primary / 0.2') 0px, transparent 50%);
+        animation: aurora 20s ease-in-out infinite;
+      }
+       /* Custom scrollbar for a modern look */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #94A3B8; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #64748B; }
+      
+      html.light .aurora-background {
+        display: none;
+      }
+
+      /* Chatbot styles */
+      .chatbot-fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        background: theme('colors.brand-primary');
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        z-index: 1000;
+      }
+      .chatbot-fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.3), inset 0 2px 6px rgba(255,255,255,0.3);
+      }
+      
+      /* Animated Diamond Icon for Chatbot FAB */
+      .chatbot-fab .diamond-container {
+        width: 40px;
+        height: 40px;
+        perspective: 800px;
+      }
+      .chatbot-fab .diamond {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        animation: rotate-diamond 15s infinite linear;
+      }
+      @keyframes rotate-diamond {
+        0% { transform: rotateX(10deg) rotateY(0deg); }
+        100% { transform: rotateX(10deg) rotateY(360deg); }
+      }
+      .chatbot-fab .face {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: hsla(243, 75%, 62%, 0.5); /* brand-primary with transparency */
+        border: 1px solid hsla(243, 75%, 80%, 0.7);
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(0,0,0,1), 0 0 5px rgba(0,0,0,1);
+        line-height: 1;
+        text-align: center;
+        transform-style: preserve-3d;
+      }
+      .chatbot-fab .face1 { transform: rotateY(0deg) translateZ(20px); }
+      .chatbot-fab .face2 { transform: rotateY(90deg) translateZ(20px); background: hsla(265, 82%, 60%, 0.5); border-color: hsla(265, 82%, 80%, 0.7); }
+      .chatbot-fab .face3 { transform: rotateY(180deg) translateZ(20px); }
+      .chatbot-fab .face3 > span {
+        transform: rotateY(180deg);
+        display: block;
+      }
+      .chatbot-fab .face4 { transform: rotateY(-90deg) translateZ(20px); background: hsla(265, 82%, 60%, 0.5); border-color: hsla(265, 82%, 80%, 0.7); }
+      .chatbot-fab .face5 { transform: rotateX(90deg) translateZ(20px); }
+      .chatbot-fab .face6 { transform: rotateX(-90deg) translateZ(20px); }
+
+      /* Splash Screen Diamond Icon */
+      .splash-diamond-container {
+        width: 150px;
+        height: 150px;
+        perspective: 1000px;
+        opacity: 0;
+        animation: diamond-fade-in 1.5s ease-out 1s forwards;
+      }
+
+      .splash-diamond-container .diamond {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        animation: rotate-diamond 15s infinite linear;
+      }
+
+      .splash-diamond-container .face {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        background: hsla(243, 75%, 62%, 0.5); /* brand-primary with transparency */
+        border: 2px solid hsla(243, 75%, 80%, 0.7);
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 0 0 15px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,1);
+        line-height: 1.1;
+        text-align: center;
+        transform-style: preserve-3d;
+      }
+
+      .splash-diamond-container .face1 { transform: rotateY(0deg) translateZ(75px); }
+      .splash-diamond-container .face2 { transform: rotateY(90deg) translateZ(75px); background: hsla(265, 82%, 60%, 0.5); border-color: hsla(265, 82%, 80%, 0.7); }
+      .splash-diamond-container .face3 { transform: rotateY(180deg) translateZ(75px); }
+      .splash-diamond-container .face3 > span {
+        transform: rotateY(180deg);
+        display: block;
+      }
+      .splash-diamond-container .face4 { transform: rotateY(-90deg) translateZ(75px); background: hsla(265, 82%, 60%, 0.5); border-color: hsla(265, 82%, 80%, 0.7); }
+      .splash-diamond-container .face5 { transform: rotateX(90deg) translateZ(75px); }
+      .splash-diamond-container .face6 { transform: rotateX(-90deg) translateZ(75px); }
+
+      @keyframes diamond-fade-in {
+        from { opacity: 0; transform: translateY(50px) scale(0.8); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      /* Sidebar Diamond Icon */
+      .sidebar-diamond-container {
+        width: 40px;
+        height: 40px;
+        perspective: 800px;
+      }
+      .sidebar-diamond-container .diamond {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        animation: rotate-diamond 15s infinite linear;
+      }
+      .sidebar-diamond-container .face {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: hsla(145, 63%, 42%, 0.5); /* Greenish to match pro banner */
+        border: 1px solid hsla(145, 63%, 60%, 0.7);
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1;
+        text-align: center;
+        transform-style: preserve-3d;
+      }
+      .sidebar-diamond-container .face1 { transform: rotateY(0deg) translateZ(20px); }
+      .sidebar-diamond-container .face2 { transform: rotateY(90deg) translateZ(20px); background: hsla(145, 63%, 35%, 0.5); border-color: hsla(145, 63%, 55%, 0.7); }
+      .sidebar-diamond-container .face3 { transform: rotateY(180deg) translateZ(20px); }
+      .sidebar-diamond-container .face3 > span {
+        transform: rotateY(180deg);
+        display: block;
+      }
+      .sidebar-diamond-container .face4 { transform: rotateY(-90deg) translateZ(20px); background: hsla(145, 63%, 35%, 0.5); border-color: hsla(145, 63%, 55%, 0.7); }
+      .sidebar-diamond-container .face5 { transform: rotateX(90deg) translateZ(20px); }
+      .sidebar-diamond-container .face6 { transform: rotateX(-90deg) translateZ(20px); }
+
+
+      .chatbot-widget {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 375px;
+        height: 550px;
+        max-height: calc(100vh - 4rem);
+        background-color: theme('colors.light-card / 0.85');
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid theme('colors.light-border / 0.5');
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        transform: translateY(100%) scale(0.8);
+        opacity: 0;
+        visibility: hidden;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, visibility 0.4s;
+        z-index: 1001;
+      }
+      .dark .chatbot-widget {
+        background-color: theme('colors.dark-card / 0.85');
+        border-color: theme('colors.dark-border / 0.5');
+      }
+
+      .chatbot-widget.open {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .chatbot-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid theme('colors.light-border');
+      }
+      .dark .chatbot-header {
+        border-color: theme('colors.dark-border');
+      }
+      .chatbot-header h3 {
+        font-weight: 700;
+        font-size: 1.125rem;
+        color: theme('colors.dark-text');
+      }
+      .dark .chatbot-header h3 {
+        color: theme('colors.light-text');
+      }
+      .chatbot-header button {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        line-height: 1;
+        cursor: pointer;
+        color: theme('colors.medium-text-light');
+      }
+       .dark .chatbot-header button {
+        color: theme('colors.medium-text');
+       }
+
+      .chatbot-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .message {
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        max-width: 80%;
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+      
+      .message.bot {
+        background-color: theme('colors.slate.100');
+        color: theme('colors.dark-text');
+        border-bottom-left-radius: 0.25rem;
+        align-self: flex-start;
+      }
+      .dark .message.bot {
+        background-color: theme('colors.dark-border');
+        color: theme('colors.light-text');
+      }
+      
+      .message.user {
+        background-color: theme('colors.brand-primary');
+        color: white;
+        border-bottom-right-radius: 0.25rem;
+        align-self: flex-end;
+      }
+      
+      .message.loading {
+        align-self: flex-start;
+      }
+      
+      .loading-dots span {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: theme('colors.medium-text-light');
+        border-radius: 50%;
+        animation: loading-pulse 1.4s infinite;
+      }
+      .dark .loading-dots span {
+         background-color: theme('colors.medium-text');
+      }
+      .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+      .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes loading-pulse {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1.0); }
+      }
+
+      .chatbot-input {
+        display: flex;
+        padding: 1rem;
+        border-top: 1px solid theme('colors.light-border');
+      }
+      .dark .chatbot-input {
+        border-color: theme('colors.dark-border');
+      }
+      .chatbot-input input {
+        flex-grow: 1;
+        border: 1px solid theme('colors.light-border');
+        background-color: theme('colors.slate.50');
+        border-radius: 9999px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+       .dark .chatbot-input input {
+         border-color: theme('colors.dark-border');
+         background-color: theme('colors.dark-bg');
+         color: theme('colors.light-text');
+       }
+      .chatbot-input input:focus {
+        border-color: theme('colors.brand-primary');
+      }
+      .chatbot-input button {
+        background: none;
+        border: none;
+        color: theme('colors.brand-primary');
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        margin-left: 0.5rem;
+      }
+       .chatbot-input button:disabled {
+        color: theme('colors.medium-text-light');
+        cursor: not-allowed;
+       }
+       .dark .chatbot-input button:disabled {
+        color: theme('colors.medium-text');
+       }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              'brand-primary': '#4F46E5',
+              'brand-secondary': '#7C3AED',
+              'brand-chatgpt': '#10a37f',
+              'copilot-blue': '#0078d4',
+              'dark-bg': '#0F172A',
+              'dark-card': '#1E293B',
+              'dark-border': '#334155',
+              'light-text': '#E2E8F0',
+              'medium-text': '#94A3B8',
+              'slate-950': '#020617',
+              'light-bg': '#F8FAFC',
+              'light-card': '#FFFFFF',
+              'light-border': '#E2E8F0',
+              'dark-text': '#1E293B',
+              'medium-text-light': '#64748B',
+              'domination-red': '#dc2626',
+              'domination-red-dark': '#b91c1c',
+              'conquest-orange': '#ea580c',
+              'conquest-orange-dark': '#c2410c',
+              'victory-gold': '#d97706',
+              'victory-gold-dark': '#b45309',
+              'intelligence-blue': '#0ea5e9',
+              'intelligence-blue-dark': '#0284c7',
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out forwards',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+            }
+          },
+        },
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "recharts": "https://aistudiocdn.com/recharts@^3.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.24.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="font-sans">
+    <div id="root"></div>
+    <div class="aurora-background"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
